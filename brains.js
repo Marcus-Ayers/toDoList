@@ -1,4 +1,5 @@
 $(document).ready(function () {
+  //DISPLAYS THE HTML
   var getAndDisplayAllTasks = function () {
     $.ajax({
       type: "GET",
@@ -7,17 +8,22 @@ $(document).ready(function () {
       success: function (response, textStatus) {
         $("#todo-list").empty();
         response.tasks.forEach(function (task) {
-          $("#todo-list").append(
-            '<div class="row"><p class="col-xs-8">' +
-              task.content +
-              '</p><button class="delete" data-id="' +
-              task.id +
-              '">Delete</button><input type="checkbox" class="mark-complete" data-id="' +
-              task.id +
-              '"' +
-              (task.completed ? "checked" : "") +
-              ">"
-          );
+          $("#todo-list").append(`<li class="list-group-item">
+          <input
+            class="form-check-input rounded-circle mark-complete"
+            id="${task.id}"
+            type="checkbox"
+            value=""
+            data-id="${task.id}"
+            ${task.completed ? "checked" : ""}
+          />
+          <label class="form-check-label" for="${
+            task.id
+          }">${task.content}</label>
+          <button class=" btn border btn-sm delete" data-id="${
+            task.id
+          }">Remove</button>
+        </li>`);
         });
       },
       error: function (request, textStatus, errorMessage) {
@@ -25,7 +31,38 @@ $(document).ready(function () {
       },
     });
   };
+  //SHOWS COMPLETED/CHECKED TASKS
+  $(".show-checked").on("click", function () {
+    $(".list-group-item").each(function (i, ele) {
+      if ($(this).find(".form-check-input").prop("checked") !== true) {
+        $(this).hide();
+      } else {
+        $(this).show();
+      }
+    });
+    $(this).addClass("selected");
+    $(this).siblings().removeClass("selected");
+  });
 
+  //SHOWS ALL TASKS
+  $(".show-all").on("click", function () {
+    getAndDisplayAllTasks();
+  });
+
+  //SHOWS ACTIVE/UNCHECKED TASKS
+  $(".show-unchecked").on("click", function () {
+    $(".list-group-item").each(function (i, ele) {
+      if ($(this).find(".form-check-input").prop("checked")) {
+        $(this).hide();
+      } else {
+        $(this).show();
+      }
+    });
+    $(this).addClass("selected");
+    $(this).siblings().removeClass("selected");
+  });
+
+  //CREATES THE NEW TASK
   var createTask = function () {
     $.ajax({
       type: "POST",
@@ -46,6 +83,7 @@ $(document).ready(function () {
       },
     });
   };
+  //REMOVES A TASK
   var deleteTask = function (id) {
     $.ajax({
       type: "DELETE",
@@ -58,7 +96,7 @@ $(document).ready(function () {
       },
     });
   };
-
+  //UNCHECKED BOX
   var markTaskActive = function (id) {
     $.ajax({
       type: "PUT",
@@ -75,7 +113,7 @@ $(document).ready(function () {
       },
     });
   };
-
+  //CHECKED BOX
   var markTaskComplete = function (id) {
     $.ajax({
       type: "PUT",
@@ -92,16 +130,21 @@ $(document).ready(function () {
       },
     });
   };
+  //CLICKING THE CREATE BUTTON
+  $("#create-task").on("submit", function (e) {
+    e.preventDefault();
+    createTask();
+  });
 
+  //CLICKING THE CHECK BOX
   $(document).on("change", ".mark-complete", function () {
-    console.log(this.checked);
     if (this.checked) {
       markTaskComplete($(this).data("id"));
     } else {
       markTaskActive($(this).data("id"));
     }
   });
-
+  //CLICKING THE DELETE BUTTON
   $(document).on("click", ".delete", function () {
     deleteTask($(this).data("id"));
   });
