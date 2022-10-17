@@ -7,25 +7,33 @@ $(document).ready(function () {
       dataType: "json",
       success: function (response, textStatus) {
         $("#todo-list").empty();
-        response.tasks.forEach(function (task) {
-          $("#todo-list").append(`<li class="list-group-item">
-          <input
-            class="form-check-input rounded-circle mark-complete"
-            id="${task.id}"
-            type="checkbox"
-            value=""
-            data-id="${task.id}"
-            ${task.completed ? "checked" : ""}
-          />
-          <label class="form-check-label" for="${
-            task.id
-          }">${task.content}</label>
-          <button class=" btn border btn-sm delete" data-id="${
-            task.id
-          }">Remove</button>
-        </li>`);
-        });
+        for (i = 97; i < 123; i++) {
+          response.tasks.forEach(function (task) {
+            let x = task.content.charAt(0);
+            x = x.toLowerCase();
+            x = x.charCodeAt(0);
+            if (x == i) {
+              $("#todo-list").append(`<li class="list-group-item">
+              <input
+              class="form-check-input rounded-circle mark-complete"
+              id="${task.id}"
+              type="checkbox"
+              value=""
+              data-id="${task.id}"
+              ${task.completed ? "checked" : ""}
+              />
+              <label class="form-check-label" for="${task.id}">${
+                task.content
+              }</label>
+              <button class=" btn border btn-sm delete" data-id="${
+                task.id
+              }">Remove</button>
+              </li>`);
+            }
+          });
+        }
       },
+
       error: function (request, textStatus, errorMessage) {
         console.log(errorMessage);
       },
